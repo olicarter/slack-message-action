@@ -46,11 +46,11 @@ while (GIFKeywords !== null) {
       const GIFURL = data[0].url;
       console.log('GIFURL', GIFURL);
       blocks.replace(GIFKeywordRegex, GIFURL);
-      GIFKeywords = GIFKeywordRegex.exec(blocks);
-      console.log('GIFKeywords', GIFKeywords);
       resolve();
     }),
   );
+  GIFKeywords = GIFKeywordRegex.exec(blocks);
+  console.log('GIFKeywords', GIFKeywords);
 }
 
 Promise.all(promises).then(function() {
