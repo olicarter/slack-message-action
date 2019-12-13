@@ -31,9 +31,10 @@ const blocksContainsGIF = GIFKeywordRegex.test(blocks);
 if (blocksContainsGIF) {
   let GIFKeywords = GIFKeywordRegex.exec(blocks);
   var promises = [];
+  console.log('blocks', blocks);
   console.log('GIFKeywords', GIFKeywords);
   while (GIFKeywords !== null) {
-    const GIFKeyword = GIFKeywords[0];
+    const GIFKeyword = GIFKeywords[1];
     console.log('GIFKeyword', GIFKeyword);
     promises.push(
       new Promise(async function(resolve) {
