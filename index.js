@@ -31,18 +31,24 @@ const blocksContainsGIF = GIFKeywordRegex.test(blocks);
 if (blocksContainsGIF) {
   let GIFKeywords = GIFKeywordRegex.exec(blocks);
   var promises = [];
+  console.log('GIFKeywords', GIFKeywords);
   while (GIFKeywords !== null) {
     const GIFKeyword = GIFKeywords[0];
+    console.log('GIFKeyword', GIFKeyword);
     promises.push(
       new Promise(async function(resolve) {
         const res = await fetch(
           `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${GIFKeyword}&limit=1`,
           { method: 'GET' },
         );
+        console.log('GIPHY res', res);
         const { data } = await res.json();
+        console.log('GIPHY data', data);
         const GIFURL = data[0].url;
+        console.log('GIFURL', GIFURL);
         blocks.replace(GIFKeywordRegex, GIFURL);
         GIFKeywords = GIFKeywordRegex.exec(blocks);
+        console.log('GIFKeywords', GIFKeywords);
         resolve();
       }),
     );
