@@ -8,7 +8,7 @@ const {
     GITHUB_REPOSITORY,
     GITHUB_SHA,
     SLACK_BOT_TOKEN,
-    SLACK_CHANNEL_ID,
+    SLACK_CHANNEL,
   },
 } = process;
 
@@ -25,11 +25,8 @@ const blocks = core
 
 // Create Slack message object
 const body = {
-  payload: {
-    channel: SLACK_CHANNEL_ID,
-    token: SLACK_BOT_TOKEN,
-    attachments: [{ blocks: JSON.parse(blocks) }],
-  },
+  channel: SLACK_CHANNEL,
+  attachments: [{ blocks: JSON.parse(blocks) }],
 };
 
 // Send Slack message

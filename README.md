@@ -2,6 +2,11 @@
 
 This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
 
+## Environment Variables
+
+**Required** `SLACK_BOT_TOKEN` The Slack bot user OAuth access token
+**Required** `SLACK_CHANNEL` The name of the Slack channel to post to
+
 ## Inputs
 
 ### `blocks`
@@ -22,7 +27,11 @@ Certain variables in double braces `{{ VAR_NAME }}` will be interpolated.
 ## Example usage
 
 ```yaml
-uses: actions/slack-message-action@v1
+name: Send Slack message
+  env:
+    SLACK_CHANNEL_ID: channel-name
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+uses: olicarter/slack-message-action@master
 with:
   blocks: '[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Some text\"}}]'
 ```
