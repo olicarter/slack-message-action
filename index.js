@@ -9,7 +9,6 @@ const {
     GITHUB_SHA,
     SLACK_BOT_TOKEN,
     SLACK_CHANNEL_ID,
-    SLACK_WEBHOOK,
   },
 } = process;
 
@@ -37,16 +36,17 @@ const body = {
 (async () => {
   console.log('Sending message');
   try {
-    await fetch(SLACK_WEBHOOK, {
+    await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+        'Content-Type': 'application/json',
       },
     });
     console.log('Message sent');
     process.exit(0);
-  } catch (e) {
+  } catch (err) {
     console.error(err.message);
     console.error(err.response.data);
     process.exit(1);
