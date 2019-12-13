@@ -1,0 +1,12 @@
+{
+  "name": "slack-message-action",
+  "version": "1.0.0",
+  "description": "Send a message to Slack from a GitHub Action",
+  "main": "index.js",
+  "author": "Oli Carter",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "node-fetch": "^2.6.0"
+  }
+}

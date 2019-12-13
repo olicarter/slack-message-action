@@ -1,0 +1,9 @@
+name: 'Send Slack message'
+description: 'Send a message to Slack'
+inputs:
+  blocks:
+    description: 'Blocks array exported from api.slack.com/tools/block-kit-builder'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'
