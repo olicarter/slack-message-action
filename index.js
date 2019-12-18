@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 
 const {
   env: {
+    EVENT_PAYLOAD: { push: { commits = [], sender = {} } = {} } = {},
     GITHUB_ACTOR,
     GITHUB_REF,
     GITHUB_REPOSITORY,
@@ -22,18 +23,27 @@ const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
 
-if (status == 'success') {
-  color = '#32CD32'; // limegreen
-} else if (status == 'failure') {
-  color = '#DC143C'; // crimson
-} else if (status == 'cancelled') {
-  color = '#DDDDDD'; // default Slack attachment grey color
-} else {
-  color = '#FFD700'; // gold
-  status += '...';
+switch (status) {
+  case 'success':
+    color = '#32CD32'; // limegreen
+  case 'failure':
+    color = '#DC143C'; // crimson
+  case 'cancelled':
+    color = '#DDDDDD'; // default Slack attachment grey color
+  default: {
+    color = '#FFD700'; // gold
+    status += '...';
+  }
 }
 
-console.log('color', color);
+const actorString = sender.html_url
+  ? `<${sender.html_url}|${GITHUB_ACTOR}>`
+  : GITHUB_ACTOR;
+
+let commitsString = '';
+commits.forEach(({ message, url }) => {
+  commitsString += `\n- <${url}|${message}>`;
+});
 
 // Create Slack message object
 const body = {
@@ -46,7 +56,7 @@ const body = {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `${GITHUB_ACTOR} pushed to ${GITHUB_REPOSITORY}`,
+            text: `${actorString} pushed to <https://github.com/${GITHUB_REPOSITORY}/tree/${BRANCH_NAME}|${GITHUB_REPOSITORY}>${commitsString}`,
           },
         },
         {
@@ -65,21 +75,6 @@ const body = {
               type: 'button',
               text: { type: 'plain_text', text: 'View Workflow' },
               url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}/checks`,
-            },
-            {
-              type: 'button',
-              text: { type: 'plain_text', text: 'View Repo' },
-              url: `https://github.com/${GITHUB_REPOSITORY}`,
-            },
-            {
-              type: 'button',
-              text: { type: 'plain_text', text: 'View Branch' },
-              url: `https://github.com/${GITHUB_REPOSITORY}/tree/${BRANCH_NAME}`,
-            },
-            {
-              type: 'button',
-              text: { type: 'plain_text', text: 'View Commit' },
-              url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}`,
             },
           ],
         },

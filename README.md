@@ -6,6 +6,7 @@ Posts and updates messages in Slack.
 
 **Required** `SLACK_BOT_TOKEN` The Slack bot user OAuth access token
 **Required** `SLACK_CHANNEL` The name of the Slack channel to post to
+**Required** `EVENT_PAYLOAD` Value must be `${{ github.event }}`
 
 ## Inputs
 
