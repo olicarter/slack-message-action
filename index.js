@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const {
   env: {
     EVENT_CONTEXT,
-    GITHUB_ACTOR,
     GITHUB_REF,
     GITHUB_REPOSITORY,
     GITHUB_SHA,
@@ -37,11 +36,7 @@ if (status == 'success') {
   status += '...';
 }
 
-const actorString = sender.html_url
-  ? `<${sender.html_url}|${GITHUB_ACTOR}>`
-  : GITHUB_ACTOR;
-
-let commitsString = '';
+let commitsString = '\n';
 commits.forEach(({ message, url }) => {
   commitsString += `\n- <${url}|${message}>`;
 });
@@ -60,7 +55,7 @@ const body = {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `${actorString} pushed to <https://github.com/${GITHUB_REPOSITORY}/tree/${BRANCH_NAME}|${GITHUB_REPOSITORY}>${commitsString}`,
+            text: `New commits pushed to <https://github.com/${GITHUB_REPOSITORY}/tree/${BRANCH_NAME}|${GITHUB_REPOSITORY}>${commitsString}`,
           },
         },
         {
