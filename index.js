@@ -104,9 +104,9 @@ if (ts) body.ts = ts;
         'Content-Type': 'application/json',
       },
     });
-    const { ts: timestamp } = await res.json();
-    console.log('response ts: ', timestamp);
-    core.setOutput('ts', timestamp);
+    const data = await res.json();
+    console.log('response data: ', data);
+    core.setOutput('ts', data);
     console.log('Message sent');
     process.exit(0);
   } catch (err) {
