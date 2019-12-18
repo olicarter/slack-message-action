@@ -13,6 +13,10 @@ const {
   },
 } = process;
 
+console.log('EVENT_CONTEXT', EVENT_CONTEXT.toString());
+console.log('push', EVENT_CONTEXT.push);
+console.log('commits', EVENT_CONTEXT.push.commits);
+
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
