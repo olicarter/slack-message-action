@@ -23,17 +23,15 @@ const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
 
-switch (status) {
-  case 'success':
-    color = '#32CD32'; // limegreen
-  case 'failure':
-    color = '#DC143C'; // crimson
-  case 'cancelled':
-    color = '#DDDDDD'; // default Slack attachment grey color
-  default: {
-    color = '#FFD700'; // gold
-    status += '...';
-  }
+if (status == 'success') {
+  color = '#32CD32'; // limegreen
+} else if (status == 'failure') {
+  color = '#DC143C'; // crimson
+} else if (status == 'cancelled') {
+  color = '#DDDDDD'; // default Slack attachment grey color
+} else {
+  color = '#FFD700'; // gold
+  status += '...';
 }
 
 const actorString = sender.html_url
