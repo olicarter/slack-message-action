@@ -15,8 +15,11 @@ const {
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
-let status = core.getInput('status').toLowerCase();
-console.log('status', status);
+let status = core.getInput('status');
+console.log('typeof status before', typeof status);
+
+status = status.toString();
+console.log('typeof status after', typeof status);
 
 const ts = core.getInput('ts');
 
