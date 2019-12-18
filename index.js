@@ -18,9 +18,6 @@ const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 let status = core.getInput('status');
 const ts = core.getInput('ts');
 
-console.log('status: ', status);
-console.log('ts: ', ts);
-
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
@@ -97,7 +94,7 @@ if (ts) body.ts = ts;
   console.log('Sending message');
   try {
     const url = `https://slack.com/api/chat.${ts ? 'update' : 'postMessage'}`;
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
@@ -105,6 +102,9 @@ if (ts) body.ts = ts;
         'Content-Type': 'application/json',
       },
     });
+    const { ts } = await res.json();
+    console.log('ts: ', ts);
+    core.setOutput('ts', ts);
     console.log('Message sent');
     process.exit(0);
   } catch (err) {
