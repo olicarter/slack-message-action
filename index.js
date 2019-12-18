@@ -105,8 +105,8 @@ if (ts) body.ts = ts;
       },
     });
     const { ts: timestamp } = await res.json();
-    console.log('ts: ', timestamp);
-    core.setOutput('response ts', timestamp);
+    console.log('response ts: ', timestamp);
+    core.setOutput('ts', timestamp);
     console.log('Message sent');
     process.exit(0);
   } catch (err) {
