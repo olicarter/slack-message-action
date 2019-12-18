@@ -4,6 +4,9 @@ inputs:
   blocks:
     description: 'Blocks array exported from api.slack.com/tools/block-kit-builder'
     required: true
+outputs:
+  ts: # id of output
+    description: 'Timestamp of the posted message'
 runs:
   using: 'node12'
   main: 'index.js'

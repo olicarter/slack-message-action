@@ -1,6 +1,6 @@
 # Send message to Slack action
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+Posts and updates messages in Slack.
 
 ## Environment Variables
 
@@ -9,29 +9,38 @@ This action prints "Hello World" or "Hello" + the name of a person to greet to t
 
 ## Inputs
 
-### `blocks`
+### `status`
 
-**Required** This is the blocks array generated at https://api.slack.com/tools/block-kit-builder.
+Type: `string`
+**Required**
 
-Make sure double-quotes are escaped, and the string is in one line surrounded by single quotes.
+The current status of the check run. Auto-capitalises string.
 
-#### Interpolated variables
+### `ts`
 
-Certain variables in double braces `{{ VAR_NAME }}` will be interpolated.
+Type: `number`
 
-- `ACTOR`: The name of the person or app that initiated the workflow. For example, `octocat`.
-- `BRANCH`: The name of branch taken from the push git ref. `push` events only.
-- `REPOSITORY`: The owner and repository name. For example, `octocat/Hello-World`.
-- `SHA`: The commit SHA that triggered the workflow. For example, `ffac537e6cbbf934b08745a378932722df287a53`.
+The timestamp of a posted Slack message. This can be obtained by assigning an `id` to the first Slack notification step of this job, then setting the value of `ts` using `${{ steps.{ID}.outputs.ts }}`. See example below.
 
 ## Example usage
 
 ```yaml
-name: Send Slack message
-  env:
-    SLACK_CHANNEL_ID: channel-name
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-uses: olicarter/slack-message-action@master
-with:
-  blocks: '[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Some text\"}}]'
+jobs:
+  build:
+    runs_on: ubuntu-latest
+    env:
+      SLACK_CHANNEL_ID: channel-name
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    steps:
+      - name: Notify Slack of check run starting
+        id: message
+        uses: olicarter/slack-message-action@master
+        with:
+          status: Check run starting
+
+      - name: Notify Slack of build starting
+        uses: olicarter/slack-message-action@master
+        with:
+          status: Building
+          ts: ${{ steps.message.outputs.ts }}
 ```

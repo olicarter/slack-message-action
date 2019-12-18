@@ -13,27 +13,91 @@ const {
 } = process;
 
 // Pluck branch name from push git ref
-const branchName = GITHUB_REF.replace(/refs\/heads\//, '');
+const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
-// Get blocks input JSON string and replace vars
-let blocks = core
-  .getInput('blocks')
-  .replace(/{{\s*BRANCH\s*}}/g, branchName)
-  .replace(/{{\s*ACTOR\s*}}/g, GITHUB_ACTOR)
-  .replace(/{{\s*REPOSITORY\s*}}/g, GITHUB_REPOSITORY)
-  .replace(/{{\s*SHA\s*}}/g, GITHUB_SHA);
+let status = core.getInput('status');
+const ts = core.getInput('ts');
+
+console.log('status: ', status);
+console.log('ts: ', ts);
+
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+let color;
+switch (status) {
+  case 'success':
+    color = '#32CD32'; // limegreen
+  case 'failure':
+    color = '#DC143C'; // crimson
+  case 'cancelled':
+    color = '#DDDDDD'; // default Slack attachment grey color
+  default:
+    color = '#FFD700'; // gold
+    status += '...';
+}
 
 // Create Slack message object
 const body = {
   channel: SLACK_CHANNEL,
-  attachments: [{ blocks: JSON.parse(blocks) }],
+  attachments: [
+    {
+      color,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `${GITHUB_ACTOR} pushed to ${GITHUB_REPOSITORY}`,
+          },
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `Status: ${capitalize(status)}`,
+            },
+          ],
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'View Workflow' },
+              url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}/checks`,
+            },
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'View Repo' },
+              url: `https://github.com/${GITHUB_REPOSITORY}`,
+            },
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'View Branch' },
+              url: `https://github.com/${GITHUB_REPOSITORY}/tree/${BRANCH_NAME}`,
+            },
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'View Commit' },
+              url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}`,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
+
+// If message has already been posted to Slack, update existing message
+if (ts) body.ts = ts;
 
 // Send Slack message
 (async () => {
   console.log('Sending message');
   try {
-    await fetch('https://slack.com/api/chat.postMessage', {
+    const url = `https://slack.com/api/chat.${ts ? 'update' : 'postMessage'}`;
+    await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
