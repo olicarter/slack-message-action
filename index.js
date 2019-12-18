@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 
 const {
   env: {
-    EVENT_PAYLOAD: { push: { commits = [], sender = {} } = {} } = {},
     GITHUB_ACTOR,
     GITHUB_REF,
     GITHUB_REPOSITORY,
@@ -15,6 +14,9 @@ const {
 
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
+
+const event = core.getInput('event');
+const { push: { commits = [], sender = {} } = {} } = event || {};
 
 let status = core.getInput('status').toLowerCase();
 const ts = core.getInput('ts');
