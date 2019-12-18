@@ -16,26 +16,21 @@ const {
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
 let status = core.getInput('status');
-console.log('typeof status before', typeof status);
-
-status = status.toString();
-console.log('typeof status after', typeof status);
-
 const ts = core.getInput('ts');
 
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
-switch (status) {
-  case 'success':
-    color = '#32CD32'; // limegreen
-  case 'failure':
-    color = '#DC143C'; // crimson
-  case 'cancelled':
-    color = '#DDDDDD'; // default Slack attachment grey color
-  default:
-    color = '#FFD700'; // gold
-    status += '...';
+
+if (status === 'success') {
+  color = '#32CD32'; // limegreen
+} else if (status === 'failure') {
+  color = '#DC143C'; // crimson
+} else if (status === 'cancelled') {
+  color = '#DDDDDD'; // default Slack attachment grey color
+} else {
+  color = '#FFD700'; // gold
+  status += '...';
 }
 
 console.log('color', color);
