@@ -15,7 +15,8 @@ const {
 
 const { commits = [], sender = {} } = JSON.parse(EVENT_CONTEXT) || {};
 
-console.log(commits);
+console.log(EVENT_CONTEXT);
+console.log(JSON.stringify(EVENT_CONTEXT));
 
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
