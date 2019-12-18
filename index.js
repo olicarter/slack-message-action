@@ -15,20 +15,12 @@ const {
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
-let status = core.getInput('status');
+let status = core.getInput('status').toLowerCase();
 const ts = core.getInput('ts');
 
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
-
-console.log('status', status);
-console.log('status == success', status == 'success');
-console.log('status.trim == success', status.trim() == 'success');
-console.log(
-  'status.lc.trim == success',
-  status.toLowerCase().trim() == 'success',
-);
 
 if (status == 'success') {
   color = '#32CD32'; // limegreen
