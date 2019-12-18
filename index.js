@@ -18,6 +18,8 @@ const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 let status = core.getInput('status').trim();
 const ts = core.getInput('ts');
 
+console.log('input ts: ', ts);
+
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
@@ -102,9 +104,9 @@ if (ts) body.ts = ts;
         'Content-Type': 'application/json',
       },
     });
-    const { ts } = await res.json();
-    console.log('ts: ', ts);
-    core.setOutput('ts', ts);
+    const { ts: timestamp } = await res.json();
+    console.log('ts: ', timestamp);
+    core.setOutput('response ts', timestamp);
     console.log('Message sent');
     process.exit(0);
   } catch (err) {
