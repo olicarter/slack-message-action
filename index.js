@@ -105,8 +105,7 @@ if (ts) body.ts = ts;
       },
     });
     const data = await res.json();
-    console.log('response data: ', data.ts);
-    core.setOutput('ts', data.ts);
+    if (!ts) core.setOutput('ts', data.ts.trim());
     console.log('Message sent');
     process.exit(0);
   } catch (err) {
