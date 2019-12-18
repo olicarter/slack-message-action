@@ -13,10 +13,8 @@ const {
   },
 } = process;
 
-const { commits = [], sender = {} } = JSON.parse(EVENT_CONTEXT) || {};
-
-console.log(EVENT_CONTEXT);
-console.log(JSON.stringify(EVENT_CONTEXT));
+const { commits = [], pusher = {}, sender = {} } =
+  JSON.parse(EVENT_CONTEXT) || {};
 
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
@@ -51,6 +49,9 @@ commits.forEach(({ message, url }) => {
 // Create Slack message object
 const body = {
   channel: SLACK_CHANNEL,
+  as_user: false,
+  icon_url: sender.avatar_url,
+  username: pusher.name,
   attachments: [
     {
       color,
