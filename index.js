@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 
 const {
   env: {
-    EVENT_CONTEXT: { push: { commits = [], sender = {} } = {} } = {},
+    EVENT_CONTEXT,
     GITHUB_ACTOR,
     GITHUB_REF,
     GITHUB_REPOSITORY,
@@ -13,9 +13,12 @@ const {
   },
 } = process;
 
-console.log('EVENT_CONTEXT', EVENT_CONTEXT.toString());
-console.log('push', EVENT_CONTEXT.push);
-console.log('commits', EVENT_CONTEXT.push.commits);
+const { push: { commits = [], sender = {} } = {} } =
+  JSON.parse(EVENT_CONTEXT) || {};
+
+console.log('EVENT_CONTEXT', JSON.parse(EVENT_CONTEXT).toString());
+console.log('push', JSON.parse(EVENT_CONTEXT).push);
+console.log('commits', JSON.parse(EVENT_CONTEXT).push.commits);
 
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
