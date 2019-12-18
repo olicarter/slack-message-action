@@ -22,11 +22,13 @@ const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 let color;
 
-if (status === 'success') {
+console.log('status == success', status == 'success');
+
+if (status == 'success') {
   color = '#32CD32'; // limegreen
-} else if (status === 'failure') {
+} else if (status == 'failure') {
   color = '#DC143C'; // crimson
-} else if (status === 'cancelled') {
+} else if (status == 'cancelled') {
   color = '#DDDDDD'; // default Slack attachment grey color
 } else {
   color = '#FFD700'; // gold
