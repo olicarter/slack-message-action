@@ -1,4 +1,4 @@
-const { exportVariable, getInput } = require('@actions/core');
+const core = require('@actions/core');
 const fetch = require('node-fetch');
 
 const {
@@ -9,84 +9,31 @@ const {
     GITHUB_SHA,
     SLACK_BOT_TOKEN,
     SLACK_CHANNEL,
-    SLACK_MESSAGE_TIMESTAMP,
   },
 } = process;
 
 // Pluck branch name from push git ref
-const GITHUB_BRANCH = GITHUB_REF.replace(/refs\/heads\//, '');
+const branchName = GITHUB_REF.replace(/refs\/heads\//, '');
 
-try {
-  if (!SLACK_BOT_TOKEN) {
-    throw Error('SLACK_BOT_TOKEN environemnt variable is required');
-  }
+// Get blocks input JSON string and replace vars
+let blocks = core
+  .getInput('blocks')
+  .replace(/{{\s*BRANCH\s*}}/g, branchName)
+  .replace(/{{\s*ACTOR\s*}}/g, GITHUB_ACTOR)
+  .replace(/{{\s*REPOSITORY\s*}}/g, GITHUB_REPOSITORY)
+  .replace(/{{\s*SHA\s*}}/g, GITHUB_SHA);
 
-  if (!SLACK_CHANNEL) {
-    throw Error('SLACK_CHANNEL environemnt variable is required');
-  }
+// Create Slack message object
+const body = {
+  channel: SLACK_CHANNEL,
+  attachments: [{ blocks: JSON.parse(blocks) }],
+};
 
-  const complete = getInput('complete') || false;
-  const status =
-    getInput('status') || complete === true
-      ? 'Workflow complete'
-      : 'Workflow running';
-
-  // Create Slack message object
-  const body = {
-    channel: SLACK_CHANNEL,
-    color: complete ? '#32cd32' : '#ffd700',
-    attachments: [
-      {
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `${GITHUB_ACTOR} pushed to ${GITHUB_REPOSITORY}\n\n*${status}*`,
-            },
-          },
-          {
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
-                text: { type: 'plain_text', text: 'Workflow' },
-                url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}/checks`,
-              },
-              {
-                type: 'button',
-                text: { type: 'plain_text', text: 'Repo' },
-                url: `https://github.com/${GITHUB_REPOSITORY}`,
-              },
-              {
-                type: 'button',
-                text: { type: 'plain_text', text: 'Branch' },
-                url: `https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_BRANCH}`,
-              },
-              {
-                type: 'button',
-                text: { type: 'plain_text', text: 'Commit' },
-                url: `https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}`,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
-
-  // Set timestamp of message to update if a message has already been sent from this workflow
-  if (SLACK_MESSAGE_TIMESTAMP) {
-    body.ts = SLACK_MESSAGE_TIMESTAMP;
-  }
-
-  // Send or update Slack message
-  (async () => {
-    const url = SLACK_MESSAGE_TIMESTAMP
-      ? 'https://slack.com/api/chat.update'
-      : 'https://slack.com/api/chat.postMessage';
-
-    const res = await fetch(url, {
+// Send Slack message
+(async () => {
+  console.log('Sending message');
+  try {
+    await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
@@ -94,16 +41,11 @@ try {
         'Content-Type': 'application/json',
       },
     });
-
-    const { ts } = await res.json();
-
-    // Set SLACK_MESSAGE_TIMESTAMP environment variable so we can update message in future steps of workflow
-    exportVariable('SLACK_MESSAGE_TIMESTAMP', ts);
-
+    console.log('Message sent');
     process.exit(0);
-  })();
-} catch (err) {
-  console.error(err.message);
-  console.error(err.response.data);
-  process.exit(1);
-}
+  } catch (err) {
+    console.error(err.message);
+    console.error(err.response.data);
+    process.exit(1);
+  }
+})();
