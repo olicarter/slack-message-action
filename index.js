@@ -15,7 +15,9 @@ const {
 // Pluck branch name from push git ref
 const BRANCH_NAME = GITHUB_REF.replace(/refs\/heads\//, '');
 
-let status = core.getInput('status');
+let status = core.getInput('status').toLowerCase();
+console.log('status', status);
+
 const ts = core.getInput('ts');
 
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
@@ -33,7 +35,6 @@ switch (status) {
     status += '...';
 }
 
-console.log('status', status);
 console.log('color', color);
 
 // Create Slack message object
